@@ -542,20 +542,36 @@
 
 @media (max-width: 768px) {
   .quiz-card-modern {
-    padding: 32px 24px;
-    border-radius: var(--radius-xl);
+    padding: 40px 24px;
+    border-radius: var(--radius-lg);
+  }
+
+  .quiz-step-modern {
+    min-height: 450px;
+  }
+
+  .step-icon-large {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 24px;
+  }
+
+  .step-icon-large svg {
+    width: 48px;
+    height: 48px;
   }
 
   .quiz-title-modern {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .quiz-question-modern {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .quiz-description-modern {
     font-size: 16px;
+    margin-bottom: 32px;
   }
 
   .start-benefits {
@@ -565,15 +581,160 @@
 
   .benefit-item-small {
     width: 100%;
+    justify-content: center;
   }
 
   .options-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 32px;
   }
 
   .option-card {
-    padding: 20px;
+    padding: 18px 16px;
+  }
+
+  .option-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .option-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .option-label {
+    font-size: 15px;
+  }
+
+  .option-description {
+    font-size: 13px;
+  }
+
+  .option-card.turnover {
+    padding: 28px 20px;
+  }
+
+  .turnover-badge {
+    font-size: 28px;
+  }
+
+  .quiz-input-modern {
+    padding: 16px 20px;
+    font-size: 15px;
+  }
+
+  .form-group-modern label {
+    font-size: 14px;
+  }
+
+  .quiz-button-modern {
+    padding: 15px 24px;
+    font-size: 15px;
+  }
+
+  .quiz-button-modern.primary.large {
+    padding: 18px 32px;
+    font-size: 17px;
+  }
+
+  .quiz-actions-modern {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .quiz-button-modern {
+    width: 100%;
+  }
+
+  .quiz-progress-modern {
+    margin-top: 32px;
+    padding-top: 24px;
+  }
+
+  .success-icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 24px;
+  }
+
+  .success-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .quiz-step-modern.success {
+    padding: 32px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-card-modern {
+    padding: 32px 16px;
+  }
+
+  .quiz-step-modern {
+    min-height: 400px;
+  }
+
+  .step-icon-large {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 20px;
+  }
+
+  .step-icon-large svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .quiz-title-modern {
+    font-size: 24px;
+  }
+
+  .quiz-question-modern {
+    font-size: 20px;
+  }
+
+  .quiz-description-modern {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .step-header {
+    margin-bottom: 32px;
+  }
+
+  .step-number {
+    font-size: 13px;
+    padding: 6px 16px;
+    margin-bottom: 16px;
+  }
+
+  .question-hint {
+    font-size: 15px;
+  }
+
+  .benefit-item-small {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .benefit-item-small svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .options-grid {
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .option-card {
+    padding: 16px 14px;
+    gap: 12px;
   }
 
   .option-icon {
@@ -586,32 +747,103 @@
     height: 24px;
   }
 
+  .option-label {
+    font-size: 14px;
+  }
+
+  .option-description {
+    font-size: 12px;
+  }
+
+  .option-check {
+    width: 22px;
+    height: 22px;
+  }
+
+  .option-check svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .option-card.turnover {
+    padding: 24px 16px;
+  }
+
+  .turnover-badge {
+    font-size: 24px;
+    margin: 12px 0 6px;
+  }
+
+  .popular-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+    top: -10px;
+  }
+
+  .quiz-input-modern {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .form-group-modern {
+    gap: 6px;
+  }
+
+  .form-group-modern label {
+    font-size: 14px;
+  }
+
   .quiz-button-modern {
-    padding: 14px 24px;
+    padding: 14px 20px;
     font-size: 15px;
   }
 
   .quiz-button-modern.primary.large {
-    padding: 16px 32px;
+    padding: 16px 28px;
     font-size: 16px;
   }
 
-  .quiz-actions-modern {
-    flex-direction: column-reverse;
-    gap: 12px;
+  .quiz-button-modern svg {
+    width: 18px;
+    height: 18px;
   }
 
-  .quiz-button-modern {
-    width: 100%;
+  .quiz-actions-modern {
+    margin-top: 24px;
+    gap: 10px;
+  }
+
+  .progress-bar-bg {
+    height: 6px;
+  }
+
+  .progress-text {
+    font-size: 13px;
   }
 
   .success-icon {
-    width: 96px;
-    height: 96px;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 20px;
   }
 
   .success-icon svg {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .success-features {
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .success-feature {
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+
+  .success-feature svg {
+    width: 20px;
+    height: 20px;
   }
 }

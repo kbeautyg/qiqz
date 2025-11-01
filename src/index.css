@@ -355,10 +355,39 @@ p {
   
   .btn {
     width: 100%;
+    padding: 16px 24px;
   }
   
   .section-sm {
     padding: 50px 0;
+  }
+  
+  h1 { font-size: 32px; }
+  h2 { font-size: 28px; }
+  h3 { font-size: 22px; }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --section-spacing: 40px;
+    --container-padding: 16px;
+  }
+  
+  body {
+    font-size: 15px;
+  }
+  
+  h1 { font-size: 28px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+  
+  .btn {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+  
+  .section-sm {
+    padding: 40px 0;
   }
 }
 

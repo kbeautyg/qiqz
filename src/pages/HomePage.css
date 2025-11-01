@@ -899,17 +899,31 @@
 @media (max-width: 768px) {
   .hero-section {
     min-height: auto;
-    padding: 80px 0 60px;
+    padding: 100px 0 60px;
+  }
+  
+  .hero-title {
+    font-size: 32px;
+  }
+  
+  .hero-description {
+    font-size: 16px;
   }
   
   .hero-stats {
-    flex-direction: column;
-    gap: 24px;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 20px;
+  }
+  
+  .stat-value {
+    font-size: 28px;
   }
   
   .hero-buttons {
     flex-direction: column;
     width: 100%;
+    gap: 12px;
   }
   
   .hero-buttons .btn {
@@ -918,35 +932,56 @@
   
   .stats-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
   }
   
   .stat-box {
-    padding: 20px;
+    padding: 20px 16px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+  }
+  
+  .stat-text {
+    font-size: 13px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+  }
+  
+  .section-subtitle {
+    font-size: 16px;
   }
   
   .icon-card {
-    padding: 32px 24px;
+    padding: 28px 20px;
   }
   
   .process-step {
-    padding: 24px;
+    padding: 24px 20px;
   }
   
   .pricing-card {
-    padding: 32px 24px;
+    padding: 32px 20px;
   }
   
   .cta-box {
-    padding: 40px 24px;
+    padding: 40px 20px;
   }
   
   .cta-content h2 {
-    font-size: 32px;
+    font-size: 28px;
+  }
+  
+  .cta-content p {
+    font-size: 16px;
   }
   
   .cta-buttons {
     flex-direction: column;
+    gap: 12px;
   }
   
   .cta-buttons .btn {
@@ -956,6 +991,83 @@
   .cta-features {
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 90px 0 50px;
+  }
+  
+  .hero-title {
+    font-size: 28px;
+  }
+  
+  .hero-description {
+    font-size: 15px;
+  }
+  
+  .hero-stats {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .section-subtitle {
+    font-size: 15px;
+  }
+  
+  .stats-grid {
+    gap: 12px;
+  }
+  
+  .stat-box {
+    padding: 16px 12px;
+  }
+  
+  .icon-card {
+    padding: 24px 16px;
+  }
+  
+  .process-step {
+    padding: 20px 16px;
+  }
+  
+  .step-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .pricing-card {
+    padding: 28px 16px;
+  }
+  
+  .price-value {
+    font-size: 48px;
+  }
+  
+  .cta-box {
+    padding: 32px 16px;
+  }
+  
+  .cta-content h2 {
+    font-size: 24px;
+  }
+  
+  .cta-content p {
+    font-size: 15px;
   }
 }
