@@ -1,0 +1,8 @@
+.contacts-page {
+  padding: 3rem 0;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
