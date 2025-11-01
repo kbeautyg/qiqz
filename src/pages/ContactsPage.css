@@ -1,8 +1,18 @@
 .contacts-page {
-  padding: 3rem 0;
-  min-height: calc(100vh - 200px);
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 60px 0;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(20, 184, 166, 0.05));
 }
 
+.contacts-page .container {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .contacts-page {
+    padding: 40px 0;
+  }
+}
