@@ -1,49 +1,303 @@
 .contacts-page {
-  min-height: calc(100vh - 70px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 0;
-  background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 50%, var(--gray-50) 100%);
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+/* Hero Section */
+.contacts-hero {
   position: relative;
+  background: var(--gradient-hero);
+  color: var(--white);
+  padding: 140px 0 80px;
   overflow: hidden;
 }
 
-.contacts-page::before {
-  content: '';
+.contacts-bg {
   position: absolute;
-  top: -200px;
-  right: -200px;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: var(--gradient-primary);
-  opacity: 0.05;
-  filter: blur(60px);
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.1;
 }
 
-.contacts-page::after {
-  content: '';
+.contacts-shape {
   position: absolute;
-  bottom: -200px;
-  left: -200px;
-  width: 500px;
-  height: 500px;
   border-radius: 50%;
   background: var(--primary);
-  opacity: 0.05;
   filter: blur(60px);
 }
 
-.contacts-page .container {
-  width: 100%;
+.contacts-shape.shape-1 {
+  width: 500px;
+  height: 500px;
+  top: -150px;
+  left: -100px;
+  animation: float 20s ease-in-out infinite;
+}
+
+.contacts-shape.shape-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  right: -100px;
+  animation: float 15s ease-in-out infinite reverse;
+}
+
+.contacts-hero-content {
   position: relative;
   z-index: 1;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contacts-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  animation: fadeInDown var(--transition-base) ease-out;
+}
+
+.contacts-hero-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  animation: fadeInUp var(--transition-base) ease-out 0.1s both;
+}
+
+.contacts-hero-description {
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  animation: fadeInUp var(--transition-base) ease-out 0.2s both;
+}
+
+/* Contacts Content */
+.contacts-content {
+  padding: 80px 0 100px;
+  position: relative;
+  margin-top: -60px;
+}
+
+.contacts-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Info Cards */
+.contacts-info {
+  animation: fadeInLeft var(--transition-slow) ease-out;
+}
+
+.info-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  transition: all var(--transition-base);
+}
+
+.info-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.info-card.main {
+  padding: 48px;
+}
+
+.info-card.main h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 16px;
+}
+
+.info-card.main > p {
+  font-size: 18px;
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.card-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  margin-bottom: 20px;
+  transition: all var(--transition-base);
+}
+
+.info-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.info-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.info-card p {
+  color: var(--gray-600);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all var(--transition-base);
+}
+
+.contact-link:hover {
+  gap: 12px;
+  color: var(--primary-dark);
+}
+
+.contact-link svg {
+  flex-shrink: 0;
+}
+
+/* Sidebar */
+.contacts-sidebar {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  animation: fadeInRight var(--transition-slow) ease-out;
+}
+
+.info-card.highlight {
+  background: var(--gradient-card);
+  border-color: var(--primary-light);
+  text-align: center;
+}
+
+.highlight-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  margin: 0 auto 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.info-card.stats h3 {
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.stat:hover {
+  background: var(--gradient-card);
+  transform: translateY(-4px);
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--gray-600);
+  line-height: 1.3;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .contacts-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .contacts-sidebar {
+    position: static;
+    grid-row: 1;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-  .contacts-page {
-    padding: 60px 0;
-    min-height: calc(100vh - 70px);
+  .contacts-hero {
+    padding: 100px 0 60px;
+  }
+  
+  .contacts-hero-title {
+    font-size: 32px;
+  }
+  
+  .contacts-hero-description {
+    font-size: 18px;
+  }
+  
+  .contacts-content {
+    padding: 60px 0 80px;
+    margin-top: -40px;
+  }
+  
+  .info-card {
+    padding: 24px;
+  }
+  
+  .info-card.main {
+    padding: 32px 24px;
+  }
+  
+  .info-card.main h2 {
+    font-size: 26px;
+  }
+  
+  .info-card.main > p {
+    font-size: 16px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
