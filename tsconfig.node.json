@@ -5,12 +5,15 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "target": "ES2020",
+    "outDir": "./",
+    "rootDir": "./",
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["vite.config.ts", "server"],
+  "include": ["server"],
+  "exclude": ["node_modules", "dist"],
   "ts-node": {
     "esm": false,
     "compilerOptions": {
