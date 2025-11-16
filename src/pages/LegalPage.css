@@ -1,0 +1,113 @@
+.legal-page {
+  min-height: 100vh;
+  background: var(--gray-50);
+}
+
+.legal-hero {
+  background: var(--gradient-hero);
+  color: var(--white);
+  padding: 140px 0 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.legal-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 55%);
+  pointer-events: none;
+}
+
+.legal-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.legal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+
+.legal-hero h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.legal-hero p {
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.legal-content {
+  padding: 80px 0 120px;
+}
+
+.legal-section {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gray-200);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 24px;
+}
+
+.legal-section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 16px;
+}
+
+.legal-section p {
+  color: var(--gray-600);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.legal-section ul {
+  margin: 0 0 16px 18px;
+  color: var(--gray-600);
+  line-height: 1.7;
+  list-style: disc;
+}
+
+.legal-note {
+  margin-top: 40px;
+  padding: 28px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--primary-light);
+  background: var(--gradient-card);
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .legal-hero {
+    padding: 100px 0 60px;
+  }
+
+  .legal-section {
+    padding: 24px;
+  }
+
+  .legal-note {
+    padding: 24px;
+  }
+}
+

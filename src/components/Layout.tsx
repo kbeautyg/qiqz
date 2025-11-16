@@ -24,6 +24,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setMobileMenuOpen(false)
   }, [location])
 
+  useEffect(() => {
+    if (location.hash) {
+      const target = document.querySelector(location.hash)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } else {
+      window.scrollTo({ top: 0 })
+    }
+  }, [location])
+
   return (
     <div className="layout">
       <header className={`header ${scrolled ? 'scrolled' : ''}`}>
@@ -49,15 +60,27 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Link to="/" className="nav-link">
                 Главная
               </Link>
-              <Link to="/quiz" className="nav-link">
+              <Link to="/product" className="nav-link">
+                Продукт
+              </Link>
+              <Link to="/calculate" className="nav-link">
                 Рассчитать комиссию
+              </Link>
+              <Link to="/process" className="nav-link">
+                Как это работает
+              </Link>
+              <Link to="/pricing-details" className="nav-link">
+                Тарифы
               </Link>
               <Link to="/contacts" className="nav-link">
                 Контакты
               </Link>
-              <a href="#consultation" className="nav-link button-link">
+              <Link to="/support" className="nav-link">
+                Поддержка
+              </Link>
+              <Link to="/contact-support" className="nav-link button-link">
                 Получить консультацию
-              </a>
+              </Link>
             </nav>
           </div>
         </div>
@@ -84,9 +107,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="footer-col">
               <h4>Продукт</h4>
               <ul className="footer-links">
-                <li><Link to="/quiz">Рассчитать комиссию</Link></li>
-                <li><a href="#how-it-works">Как это работает</a></li>
-                <li><a href="#pricing">Тарифы</a></li>
+                <li><Link to="/product">О продукте</Link></li>
+                <li><Link to="/calculate">Рассчитать комиссию</Link></li>
+                <li><Link to="/process">Как это работает</Link></li>
+                <li><Link to="/pricing-details">Тарифы</Link></li>
                 <li><Link to="/contacts">Контакты</Link></li>
               </ul>
             </div>
@@ -94,15 +118,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="footer-col">
               <h4>Поддержка</h4>
               <ul className="footer-links">
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="#consultation">Связаться с нами</a></li>
-                <li><a href="https://t.me/support">Telegram</a></li>
-                <li><a href="mailto:support@paymentservice.com">Email</a></li>
+                <li><Link to="/support">Поддержка</Link></li>
+                <li><Link to="/faq">FAQ</Link></li>
+                <li><Link to="/contact-support">Связаться с нами</Link></li>
+                <li><Link to="/support/telegram">Telegram</Link></li>
+                <li><Link to="/support/email">Email</Link></li>
               </ul>
             </div>
             
             <div className="footer-col">
               <h4>Следите за нами</h4>
+              <ul className="footer-links">
+                <li><Link to="/social">Социальные сети</Link></li>
+              </ul>
               <div className="social-links">
                 <a href="https://t.me/paymentservice" className="social-link" aria-label="Telegram">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -119,10 +147,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           
           <div className="footer-bottom">
-            <p>&copy; 2025 PaymentService. Все права защищены.</p>
+            <p>
+              <Link to="/about">&copy; 2025 PaymentService. Все права защищены.</Link>
+            </p>
             <div className="footer-legal">
-              <a href="/privacy">Политика конфиденциальности</a>
-              <a href="/terms">Условия использования</a>
+              <Link to="/privacy">Политика конфиденциальности</Link>
+              <Link to="/terms">Условия использования</Link>
             </div>
           </div>
         </div>
