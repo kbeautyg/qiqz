@@ -6,6 +6,84 @@ import './HomePage.css'
 const HomePage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  const statsData = [
+    {
+      value: '100%',
+      label: 'Защищенные транзакции',
+      chip: 'Фрод-мониторинг',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      )
+    },
+    {
+      value: '15 мин',
+      label: 'Среднее время ответа',
+      chip: 'Живые менеджеры',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      )
+    },
+    {
+      value: '1000+',
+      label: 'Довольных клиентов',
+      chip: 'Повторные обращения',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      )
+    },
+    {
+      value: '₽1.5M+',
+      label: 'Обрабатываем ежедневно',
+      chip: 'Средний оборот',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+        </svg>
+      )
+    }
+  ]
+
+  const processSteps = [
+    {
+      number: '01',
+      title: 'Прием платежей',
+      description: 'Клиент оплачивает через СБП, карты Visa/Mir/Mastercard или банковский перевод. Деньги поступают в личный кабинет мгновенно.',
+      metricLabel: 'Способы',
+      metricValue: 'СБП • Visa/Mir • Wire'
+    },
+    {
+      number: '02',
+      title: 'Накопление на счёте',
+      description: 'Вы видите каждую транзакцию в реальном времени. Средства аккумулируются на балансе, пока вы не решите конвертировать их.',
+      metricLabel: 'На балансе',
+      metricValue: '₽ 1.2M'
+    },
+    {
+      number: '03',
+      title: 'Фиксация курса',
+      description: 'Раз в день или по запросу фиксируем курс grinex.io + комиссия от 3% до 5% — в зависимости от оборота компании.',
+      metricLabel: 'Курс',
+      metricValue: '92.7 ₽/USDT'
+    },
+    {
+      number: '04',
+      title: 'Получение USDT',
+      description: 'После фиксации переводим конвертированные USDT на ваш криптокошелек. Быстро, прозрачно и безопасно.',
+      metricLabel: 'Выплата',
+      metricValue: '₮ USDT'
+    }
+  ]
+
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index)
   }
@@ -133,57 +211,17 @@ const HomePage: React.FC = () => {
       <section className="stats-bar">
         <div className="container">
           <div className="stats-grid">
-            <div className="stat-box">
-              <div className="stat-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
+            {statsData.map((stat) => (
+              <div className="stat-box" key={stat.label}>
+                <div className="stat-icon">{stat.icon}</div>
+                <div className="stat-info">
+                  <span className="stat-chip">{stat.chip}</span>
+                  <div className="stat-number">{stat.value}</div>
+                  <div className="stat-text">{stat.label}</div>
+                  <span className="stat-divider" aria-hidden="true"></span>
+                </div>
               </div>
-              <div className="stat-info">
-                <div className="stat-number">100%</div>
-                <div className="stat-text">Защищенные транзакции</div>
-              </div>
-            </div>
-            
-            <div className="stat-box">
-              <div className="stat-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-              <div className="stat-info">
-                <div className="stat-number">15 мин</div>
-                <div className="stat-text">Среднее время ответа</div>
-              </div>
-            </div>
-            
-            <div className="stat-box">
-              <div className="stat-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-                </svg>
-              </div>
-              <div className="stat-info">
-                <div className="stat-number">1000+</div>
-                <div className="stat-text">Довольных клиентов</div>
-              </div>
-            </div>
-            
-            <div className="stat-box">
-              <div className="stat-icon">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="12" y1="1" x2="12" y2="23"/>
-                  <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-                </svg>
-              </div>
-              <div className="stat-info">
-                <div className="stat-number">₽1.5M+</div>
-                <div className="stat-text">Обработано ежедневно</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -278,77 +316,27 @@ const HomePage: React.FC = () => {
             </p>
           </div>
           
-          <div className="process-timeline">
-            <div className="process-step">
-              <div className="step-badge">01</div>
-              <div className="step-content">
-                <h3>Прием платежей</h3>
-                <p>Клиент оплачивает через СБП, карты Visa/Mir/Mastercard или банковский перевод. Деньги поступают на ваш счет в личном кабинете.</p>
-              </div>
-              <div className="step-visual">
-                <svg width="200" height="120" viewBox="0 0 200 120">
-                  <rect x="20" y="30" width="160" height="60" rx="8" fill="#f3f4f6" stroke="#10b981" strokeWidth="2"/>
-                  <circle cx="50" cy="60" r="15" fill="#10b981"/>
-                  <path d="M45 60l5 5 10-10" stroke="white" strokeWidth="2" fill="none"/>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="process-arrow">→</div>
-            
-            <div className="process-step">
-              <div className="step-badge">02</div>
-              <div className="step-content">
-                <h3>Накопление на счете</h3>
-                <p>Рубли накапливаются на вашем балансе. Вы видите все транзакции в реальном времени с детальной аналитикой.</p>
-              </div>
-              <div className="step-visual">
-                <svg width="200" height="120" viewBox="0 0 200 120">
-                  <rect x="20" y="20" width="160" height="80" rx="8" fill="#f3f4f6"/>
-                  <text x="100" y="60" textAnchor="middle" fill="#10b981" fontSize="24" fontWeight="bold">₽ 1.2M</text>
-                  <text x="100" y="85" textAnchor="middle" fill="#6b7280" fontSize="12">На балансе</text>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="process-arrow">→</div>
-            
-            <div className="process-step">
-              <div className="step-badge">03</div>
-              <div className="step-content">
-                <h3>Фиксация курса</h3>
-                <p>В конце дня мы фиксируем биржевой курс по grinex.io + наша комиссия от 3% до 5% в зависимости от оборота.</p>
-              </div>
-              <div className="step-visual">
-                <svg width="200" height="120" viewBox="0 0 200 120">
-                  <circle cx="100" cy="60" r="40" fill="#10b981" opacity="0.1"/>
-                  <text x="100" y="65" textAnchor="middle" fill="#10b981" fontSize="20" fontWeight="bold">92.7</text>
-                  <text x="100" y="85" textAnchor="middle" fill="#6b7280" fontSize="12">₽/USDT</text>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="process-arrow">→</div>
-            
-            <div className="process-step">
-              <div className="step-badge">04</div>
-              <div className="step-content">
-                <h3>Получение USDT</h3>
-                <p>Конвертированные USDT поступают на указанный вами криптокошелек. Прозрачно, быстро, безопасно.</p>
-              </div>
-              <div className="step-visual">
-                <svg width="200" height="120" viewBox="0 0 200 120">
-                  <rect x="40" y="30" width="120" height="60" rx="30" fill="#10b981"/>
-                  <text x="100" y="65" textAnchor="middle" fill="white" fontSize="24" fontWeight="bold">₮ USDT</text>
-                </svg>
-              </div>
-            </div>
+          <div className="process-grid">
+            {processSteps.map((step, index) => (
+              <article className="process-card" key={step.title}>
+                <div className="process-number">{step.number}</div>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+                <div className="process-metric">
+                  <span>{step.metricLabel}</span>
+                  <strong>{step.metricValue}</strong>
+                </div>
+                {index !== processSteps.length - 1 && (
+                  <span className="process-connector" aria-hidden="true"></span>
+                )}
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section className="section pricing">
+      <section id="pricing" className="section pricing">
         <div className="container">
           <div className="section-header">
             <span className="section-badge">Тарифы</span>
@@ -394,7 +382,7 @@ const HomePage: React.FC = () => {
                   Email поддержка
                 </li>
               </ul>
-              <Link to="/quiz" className="btn btn-outline">
+              <Link to={{ pathname: '/quiz', search: '?plan=starter' }} className="btn btn-outline">
                 Начать
               </Link>
             </div>
@@ -441,7 +429,7 @@ const HomePage: React.FC = () => {
                   Webhook уведомления
                 </li>
               </ul>
-              <Link to="/quiz" className="btn btn-primary">
+              <Link to={{ pathname: '/quiz', search: '?plan=business' }} className="btn btn-primary">
                 Подключить
               </Link>
             </div>
@@ -487,16 +475,16 @@ const HomePage: React.FC = () => {
                   SLA гарантии
                 </li>
               </ul>
-              <a href="#consultation" className="btn btn-outline">
+              <Link to={{ pathname: '/quiz', search: '?plan=enterprise' }} className="btn btn-outline">
                 Связаться
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="section faq">
+      <section id="faq" className="section faq">
         <div className="container">
           <div className="faq-layout">
             <div className="faq-left">
