@@ -5,13 +5,17 @@ import { saveToDatabase } from '../services/database'
 const router = express.Router()
 
 interface QuizRequest {
-  businessType: string
-  businessTypeOther?: string
-  paymentMethods: string[]
-  turnover: string
+  role?: string
+  volume?: string
+  methods?: string[]
+  payout?: string
+  urgency?: string
+  tariffName?: string
+  tariffRate?: string
   name: string
   contact: string
-  email?: string
+  company?: string
+  agreeToTerms?: boolean
   timestamp: string
   source: string
 }

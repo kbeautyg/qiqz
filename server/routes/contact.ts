@@ -9,6 +9,7 @@ interface ContactRequest {
   phone: string
   promoCode?: string
   sourcePage?: string
+  agreeToTerms?: boolean
   timestamp: string
   source: string
   utmParams?: {

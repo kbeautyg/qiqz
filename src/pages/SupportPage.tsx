@@ -39,7 +39,7 @@ const sections: InfoPageSection[] = [
 const SupportPage: React.FC = () => (
   <InfoPageTemplate
     badge="Поддержка"
-    title="Поддержка PaymentService"
+    title="Поддержка KURS"
     description="Мы остаёмся с вами на всех этапах: от подключения до масштабирования оборота."
     sections={sections}
     note={

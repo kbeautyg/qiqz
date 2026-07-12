@@ -3,7 +3,7 @@ import InfoPageTemplate, { InfoPageSection } from './InfoPageTemplate'
 
 const sections: InfoPageSection[] = [
   {
-    title: 'Что включено в PaymentService',
+    title: 'Что включено в KURS',
     paragraphs: [
       'Мы собрали полный набор инструментов для приёма рублей и мгновенной конвертации в USDT. Наша команда адаптирует набор функций под тип вашего бизнеса и каналов продаж.',
     ],
@@ -17,7 +17,7 @@ const sections: InfoPageSection[] = [
   {
     title: 'Для кого сервис',
     paragraphs: [
-      'PaymentService гибко настраивается под разные сценарии. Мы адаптируем антифрод, лимиты и валютные сценарии под ваш бизнес.',
+      'KURS гибко настраивается под разные сценарии. Мы адаптируем антифрод, лимиты и валютные сценарии под ваш бизнес.',
     ],
     list: [
       'Онлайн-школы, консультанты и эксперты',
@@ -44,7 +44,7 @@ const sections: InfoPageSection[] = [
 const ProductPage: React.FC = () => (
   <InfoPageTemplate
     badge="Продукт"
-    title="PaymentService — платёжный сервис нового поколения"
+    title="KURS — платёжный сервис нового поколения"
     description="Принимайте платежи, конвертируйте их в USDT и управляйте финансами в одном кабинете."
     sections={sections}
     note="Готовы обсудить детали? Заполните квиз или оставьте заявку — мы подготовим предложение в течение 15 минут."

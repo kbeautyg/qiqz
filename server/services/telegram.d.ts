@@ -1,11 +1,20 @@
 interface QuizData {
-    businessType: string;
-    businessTypeOther?: string;
-    paymentMethods: string[];
-    turnover: string;
+    role?: string;
+    roleLabel?: string;
+    volume?: string;
+    volumeLabel?: string;
+    methods?: string[];
+    methodsLabel?: string;
+    payout?: string;
+    payoutLabel?: string;
+    urgency?: string;
+    urgencyLabel?: string;
+    tariffName?: string;
+    tariffRate?: string;
     name: string;
     contact: string;
-    email?: string;
+    company?: string;
+    agreeToTerms?: boolean;
 }
 export declare function sendQuizNotification(data: QuizData): Promise<void>;
 interface ContactData {

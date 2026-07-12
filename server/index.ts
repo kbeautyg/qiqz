@@ -17,7 +17,7 @@ app.use(express.json())
 app.use('/api/quiz', quizRoutes)
 app.use('/api/contact', contactRoutes)
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' })
 })
 
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(distPath))
   
   // All other routes should serve index.html (for client-side routing)
-  app.get('*', (req, res) => {
+  app.get('*', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'))
   })
 }

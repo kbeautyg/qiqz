@@ -1,644 +1,385 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import './Quiz.css'
 
-interface QuizData {
-  businessType: string
-  businessTypeOther?: string
-  paymentMethods: string[]
-  turnover: string
+type QuestionType = 'single' | 'multi'
+
+interface QuestionOption {
+  value: string
+  label: string
+  hint?: string
+}
+
+interface Question {
+  key: 'role' | 'volume' | 'methods' | 'payout' | 'urgency'
+  type: QuestionType
+  eyebrow: string
+  title: string
+  subtitle?: string
+  options: QuestionOption[]
+}
+
+interface QuizAnswers {
+  role?: string
+  volume?: string
+  methods: string[]
+  payout?: string
+  urgency?: string
+}
+
+interface LeadForm {
   name: string
   contact: string
-  email?: string
+  company: string
+}
+
+const QUESTIONS: Question[] = [
+  {
+    key: 'role',
+    type: 'single',
+    eyebrow: 'Кто вы',
+    title: 'Вы регистрируете счёт как...',
+    subtitle: 'Определяет лимиты и список документов',
+    options: [
+      { value: 'business', label: 'Бизнес / ИП', hint: 'Приём платежей от клиентов' },
+      { value: 'individual', label: 'Физическое лицо', hint: 'Личные переводы и вывод дохода' },
+    ],
+  },
+  {
+    key: 'volume',
+    type: 'single',
+    eyebrow: 'Объём',
+    title: 'Какой у вас средний объём платежей в месяц?',
+    subtitle: 'Главный фактор для ставки комиссии',
+    options: [
+      { value: 'v1', label: 'До $10 000' },
+      { value: 'v2', label: '$10 000 — $250 000' },
+      { value: 'v3', label: 'Свыше $250 000', hint: 'Индивидуальные условия' },
+    ],
+  },
+  {
+    key: 'methods',
+    type: 'multi',
+    eyebrow: 'Приём платежей',
+    title: 'Как принимаете платежи сейчас?',
+    subtitle: 'Можно выбрать несколько вариантов',
+    options: [
+      { value: 'card', label: 'Банковская карта' },
+      { value: 'sbp', label: 'СБП / перевод по счёту' },
+      { value: 'crypto', label: 'Крипта напрямую' },
+      { value: 'other', label: 'Ещё не принимаю' },
+    ],
+  },
+  {
+    key: 'payout',
+    type: 'single',
+    eyebrow: 'Вывод',
+    title: 'Куда нужен вывод средств?',
+    options: [
+      { value: 'trc20', label: 'USDT · TRC20', hint: 'Минимальная комиссия сети' },
+      { value: 'erc20', label: 'USDT · ERC20' },
+      { value: 'fiat', label: 'Обратно в фиат', hint: 'На карту или счёт' },
+    ],
+  },
+  {
+    key: 'urgency',
+    type: 'single',
+    eyebrow: 'Сроки',
+    title: 'Когда планируете подключение?',
+    options: [
+      { value: 'now', label: 'Сегодня-завтра' },
+      { value: 'week', label: 'На этой неделе' },
+      { value: 'research', label: 'Пока изучаю варианты' },
+    ],
+  },
+]
+
+const TARIFF_BY_VOLUME: Record<string, { name: string; rate: string; range: string }> = {
+  v1: { name: 'START', rate: '1.2%', range: 'до $10 000 / мес' },
+  v2: { name: 'BUSINESS', rate: '0.7%', range: '$10 000–250 000 / мес' },
+  v3: { name: 'ENTERPRISE', rate: 'от 0.4%', range: 'свыше $250 000 / мес' },
+}
+
+const getLabel = (qKey: Question['key'], value?: string): string => {
+  const q = QUESTIONS.find((item) => item.key === qKey)
+  const opt = q?.options.find((item) => item.value === value)
+  return opt ? opt.label : ''
 }
 
 const Quiz: React.FC = () => {
-  const [step, setStep] = useState(1)
-  const [data, setData] = useState<QuizData>({
-    businessType: '',
-    paymentMethods: [],
-    turnover: '',
-    name: '',
-    contact: '',
-  })
+  const [step, setStep] = useState(0)
+  const [direction, setDirection] = useState<'fwd' | 'back'>('fwd')
+  const [answers, setAnswers] = useState<QuizAnswers>({ methods: [] })
+  const [leadForm, setLeadForm] = useState<LeadForm>({ name: '', contact: '', company: '' })
+  const [agreeToTerms, setAgreeToTerms] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const totalSteps = 5
+  const totalSteps = QUESTIONS.length
+  const isResultStep = step >= totalSteps
+  const currentQuestion = !isResultStep ? QUESTIONS[step] : null
 
-  const businessTypes = [
-    { 
-      value: 'tourism', 
-      label: 'Туризм и путешествия',
-      description: 'Туры, билеты, экскурсии',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'consulting', 
-      label: 'Консультации и обучение',
-      description: 'Услуги, вебинары, коучинг',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'ecommerce', 
-      label: 'Интернет-магазин',
-      description: 'Товары, цифровые продукты',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="9" cy="21" r="1"/>
-          <circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'freelance', 
-      label: 'Фриланс и услуги',
-      description: 'Расчеты с заказчиками',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-          <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'exchange', 
-      label: 'Обменник валют',
-      description: 'Офлайн или онлайн',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="12" y1="1" x2="12" y2="23"/>
-          <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'other', 
-      label: 'Другая сфера',
-      description: 'Расскажите подробнее',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="16" x2="12" y2="12"/>
-          <line x1="12" y1="8" x2="12.01" y2="8"/>
-        </svg>
-      )
+  useEffect(() => {
+    return () => {
+      if (advanceTimer.current) clearTimeout(advanceTimer.current)
     }
-  ]
+  }, [])
 
-  const paymentMethodsOptions = [
-    { 
-      value: 'bank_transfer', 
-      label: 'Банковский перевод',
-      description: 'По реквизитам',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-          <line x1="1" y1="10" x2="23" y2="10"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'payment_systems', 
-      label: 'Платежные системы',
-      description: 'Юмани, Киви и т.д.',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 6v6l4 2"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'cards', 
-      label: 'Карты онлайн',
-      description: 'Онлайн-эквайринг',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect x="2" y="5" width="20" height="14" rx="2"/>
-          <line x1="2" y1="10" x2="22" y2="10"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'sbp', 
-      label: 'СБП',
-      description: 'Быстрые платежи',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'cash', 
-      label: 'Наличные',
-      description: 'Офлайн платежи',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="12" y1="1" x2="12" y2="23"/>
-          <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'crypto', 
-      label: 'Криптовалюты',
-      description: 'USDT, BTC и др.',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-      )
-    },
-    { 
-      value: 'difficulties', 
-      label: 'Испытываю трудности',
-      description: 'С платежами из России',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
-        </svg>
-      )
-    }
-  ]
-
-  const turnoverOptions = [
-    { 
-      value: '0-500k', 
-      label: 'До 500 тыс. ₽',
-      description: 'В месяц',
-      badge: '5%',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 3v18h18"/>
-          <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-        </svg>
-      )
-    },
-    { 
-      value: '500k-2m', 
-      label: '500 тыс. – 2 млн ₽',
-      description: 'В месяц',
-      badge: '4%',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 3v18h18"/>
-          <path d="M18 17l-5-5-4 4-6-6"/>
-        </svg>
-      )
-    },
-    { 
-      value: '2m-5m', 
-      label: '2 – 5 млн ₽',
-      description: 'В месяц',
-      badge: '3.5%',
-      popular: true,
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 3v18h18"/>
-          <polyline points="18 7 13 12 9 8 3 14"/>
-        </svg>
-      )
-    },
-    { 
-      value: '5m+', 
-      label: 'Более 5 млн ₽',
-      description: 'В месяц',
-      badge: '3%',
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
-      )
-    }
-  ]
-
-  const handleBusinessTypeChange = (value: string) => {
-    setData({ ...data, businessType: value })
+  const goNext = () => {
+    setDirection('fwd')
+    setStep((s) => s + 1)
   }
 
-  const handlePaymentMethodToggle = (value: string) => {
-    const methods = data.paymentMethods.includes(value)
-      ? data.paymentMethods.filter((m) => m !== value)
-      : [...data.paymentMethods, value]
-    setData({ ...data, paymentMethods: methods })
+  const goBack = () => {
+    if (step > 0) {
+      setDirection('back')
+      setStep((s) => s - 1)
+    }
   }
 
-  const handleTurnoverChange = (value: string) => {
-    setData({ ...data, turnover: value })
+  const restart = () => {
+    setStep(0)
+    setDirection('fwd')
+    setAnswers({ methods: [] })
+    setLeadForm({ name: '', contact: '', company: '' })
+    setAgreeToTerms(false)
+    setSubmitting(false)
+    setSubmitted(false)
+    setSubmitError('')
   }
 
-  const handleSubmit = async () => {
+  const selectSingle = (key: Question['key'], value: string) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }))
+    if (advanceTimer.current) clearTimeout(advanceTimer.current)
+    advanceTimer.current = setTimeout(() => {
+      setDirection('fwd')
+      setStep((s) => s + 1)
+    }, 380)
+  }
+
+  const toggleMulti = (value: string) => {
+    setAnswers((prev) => {
+      const current = prev.methods
+      const next = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value]
+      return { ...prev, methods: next }
+    })
+  }
+
+  const canProceedMulti = currentQuestion?.type === 'multi' ? answers.methods.length > 0 : true
+
+  const canSubmitLead =
+    leadForm.name.trim() !== '' && leadForm.contact.trim() !== '' && agreeToTerms
+
+  const handleSubmitLead = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!canSubmitLead) return
+
+    setSubmitting(true)
+    setSubmitError('')
+
+    const tariff = TARIFF_BY_VOLUME[answers.volume ?? 'v1'] ?? TARIFF_BY_VOLUME.v1
+
     try {
       const response = await axios.post('/api/quiz', {
-        ...data,
+        role: answers.role,
+        roleLabel: getLabel('role', answers.role),
+        volume: answers.volume,
+        volumeLabel: getLabel('volume', answers.volume),
+        methods: answers.methods,
+        methodsLabel: answers.methods.map((v) => getLabel('methods', v)).join(', '),
+        payout: answers.payout,
+        payoutLabel: getLabel('payout', answers.payout),
+        urgency: answers.urgency,
+        urgencyLabel: getLabel('urgency', answers.urgency),
+        tariffName: tariff.name,
+        tariffRate: tariff.rate,
+        name: leadForm.name,
+        contact: leadForm.contact,
+        company: leadForm.company,
+        agreeToTerms,
         timestamp: new Date().toISOString(),
         source: 'quiz',
       })
 
       if (response.data.success) {
-        setStep(6)
+        setSubmitted(true)
       }
     } catch (error) {
       console.error('Error submitting quiz:', error)
-      alert('Произошла ошибка. Пожалуйста, попробуйте еще раз.')
+      setSubmitError('Произошла ошибка. Пожалуйста, попробуйте ещё раз.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  const canProceed = () => {
-    switch (step) {
-      case 1:
-        return true
-      case 2:
-        return data.businessType !== ''
-      case 3:
-        return data.paymentMethods.length > 0
-      case 4:
-        return data.turnover !== ''
-      case 5:
-        return data.name !== '' && data.contact !== ''
-      default:
-        return false
-    }
-  }
-
-  const nextStep = () => {
-    if (canProceed() && step < totalSteps) {
-      setStep(step + 1)
-    }
-  }
-
-  const prevStep = () => {
-    if (step > 1) {
-      setStep(step - 1)
-    }
-  }
+  const tariff = TARIFF_BY_VOLUME[answers.volume ?? 'v1'] ?? TARIFF_BY_VOLUME.v1
+  const summary = [
+    getLabel('role', answers.role),
+    getLabel('volume', answers.volume),
+    answers.methods.map((v) => getLabel('methods', v)).join(', '),
+    getLabel('payout', answers.payout),
+    getLabel('urgency', answers.urgency),
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
-    <div className="quiz-container">
-      <div className="quiz-card-modern">
-        {step === 1 && (
-          <div className="quiz-step-modern">
-            <div className="step-icon-large">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 11l3 3L22 4"/>
-                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-              </svg>
-            </div>
-            
-            <h1 className="quiz-title-modern">
-              Рассчитаем персональную комиссию для вашего бизнеса
-            </h1>
-            
-            <p className="quiz-description-modern">
-              Ответьте на 4 вопроса — это займет всего 2 минуты. Мы подберем оптимальные условия с учетом вашего оборота и сферы деятельности.
-            </p>
-            
-            <div className="start-benefits">
-              <div className="benefit-item-small">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Займет 2 минуты</span>
-              </div>
-              <div className="benefit-item-small">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Персональный расчет</span>
-              </div>
-              <div className="benefit-item-small">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Без обязательств</span>
-              </div>
-            </div>
-
-            <button className="quiz-button-modern primary large" onClick={nextStep}>
-              Начать расчет
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="quiz-step-modern">
-            <div className="step-header">
-              <div className="step-number">Шаг 1 из 4</div>
-              <h2 className="quiz-question-modern">Какой у вас бизнес?</h2>
-              <p className="question-hint">Выберите сферу деятельности вашей компании</p>
-            </div>
-
-            <div className="options-grid">
-              {businessTypes.map((option) => (
-                <label key={option.value} className={`option-card ${data.businessType === option.value ? 'selected' : ''}`}>
-                  <input
-                    type="radio"
-                    name="businessType"
-                    value={option.value}
-                    checked={data.businessType === option.value}
-                    onChange={() => handleBusinessTypeChange(option.value)}
-                  />
-                  <div className="option-icon">
-                    {option.icon}
-                  </div>
-                  <div className="option-content">
-                    <div className="option-label">{option.label}</div>
-                    <div className="option-description">{option.description}</div>
-                  </div>
-                  <div className="option-check">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                </label>
-              ))}
-            </div>
-            
-            {data.businessType === 'other' && (
-              <div className="other-input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Уточните тип вашего бизнеса"
-                  className="quiz-input-modern"
-                  value={data.businessTypeOther || ''}
-                  onChange={(e) => setData({ ...data, businessTypeOther: e.target.value })}
-                />
-              </div>
-            )}
-
-            <div className="quiz-actions-modern">
-              <button className="quiz-button-modern secondary" onClick={prevStep}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="19" y1="12" x2="5" y2="12"/>
-                  <polyline points="12 19 5 12 12 5"/>
-                </svg>
-                Назад
-              </button>
-              <button
-                className="quiz-button-modern primary"
-                onClick={nextStep}
-                disabled={!canProceed()}
-              >
-                Далее
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="quiz-step-modern">
-            <div className="step-header">
-              <div className="step-number">Шаг 2 из 4</div>
-              <h2 className="quiz-question-modern">Как вы принимаете оплату?</h2>
-              <p className="question-hint">Выберите все подходящие варианты</p>
-            </div>
-
-            <div className="options-grid">
-              {paymentMethodsOptions.map((option) => (
-                <label key={option.value} className={`option-card checkbox ${data.paymentMethods.includes(option.value) ? 'selected' : ''}`}>
-                  <input
-                    type="checkbox"
-                    value={option.value}
-                    checked={data.paymentMethods.includes(option.value)}
-                    onChange={() => handlePaymentMethodToggle(option.value)}
-                  />
-                  <div className="option-icon">
-                    {option.icon}
-                  </div>
-                  <div className="option-content">
-                    <div className="option-label">{option.label}</div>
-                    <div className="option-description">{option.description}</div>
-                  </div>
-                  <div className="option-check">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                </label>
-              ))}
-            </div>
-
-            <div className="quiz-actions-modern">
-              <button className="quiz-button-modern secondary" onClick={prevStep}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="19" y1="12" x2="5" y2="12"/>
-                  <polyline points="12 19 5 12 12 5"/>
-                </svg>
-                Назад
-              </button>
-              <button
-                className="quiz-button-modern primary"
-                onClick={nextStep}
-                disabled={!canProceed()}
-              >
-                Далее
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="quiz-step-modern">
-            <div className="step-header">
-              <div className="step-number">Шаг 3 из 4</div>
-              <h2 className="quiz-question-modern">Какой месячный оборот?</h2>
-              <p className="question-hint">От оборота зависит размер комиссии</p>
-            </div>
-
-            <div className="options-grid turnover">
-              {turnoverOptions.map((option) => (
-                <label key={option.value} className={`option-card turnover ${data.turnover === option.value ? 'selected' : ''} ${option.popular ? 'popular' : ''}`}>
-                  {option.popular && <div className="popular-badge">Популярный</div>}
-                  <input
-                    type="radio"
-                    name="turnover"
-                    value={option.value}
-                    checked={data.turnover === option.value}
-                    onChange={() => handleTurnoverChange(option.value)}
-                  />
-                  <div className="option-icon">
-                    {option.icon}
-                  </div>
-                  <div className="turnover-badge">{option.badge}</div>
-                  <div className="option-content">
-                    <div className="option-label">{option.label}</div>
-                    <div className="option-description">{option.description}</div>
-                  </div>
-                  <div className="option-check">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                </label>
-              ))}
-            </div>
-
-            <div className="quiz-actions-modern">
-              <button className="quiz-button-modern secondary" onClick={prevStep}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="19" y1="12" x2="5" y2="12"/>
-                  <polyline points="12 19 5 12 12 5"/>
-                </svg>
-                Назад
-              </button>
-              <button
-                className="quiz-button-modern primary"
-                onClick={nextStep}
-                disabled={!canProceed()}
-              >
-                Далее
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="quiz-step-modern">
-            <div className="step-header">
-              <div className="step-number">Шаг 4 из 4</div>
-              <h2 className="quiz-question-modern">Куда отправить расчет?</h2>
-              <p className="question-hint">Мы свяжемся с вами в течение 15 минут</p>
-            </div>
-
-            <div className="quiz-form-modern">
-              <div className="form-group-modern">
-                <label>Ваше имя</label>
-                <input
-                  type="text"
-                  placeholder="Иван Иванов"
-                  className="quiz-input-modern"
-                  value={data.name}
-                  onChange={(e) => setData({ ...data, name: e.target.value })}
-                  required
-                />
-              </div>
-              
-              <div className="form-group-modern">
-                <label>Телефон или Telegram</label>
-                <input
-                  type="text"
-                  placeholder="+7 (900) 123-45-67 или @username"
-                  className="quiz-input-modern"
-                  value={data.contact}
-                  onChange={(e) => setData({ ...data, contact: e.target.value })}
-                  required
-                />
-              </div>
-              
-              <div className="form-group-modern">
-                <label>E-mail <span className="optional">(необязательно)</span></label>
-                <input
-                  type="email"
-                  placeholder="ivan@example.com"
-                  className="quiz-input-modern"
-                  value={data.email || ''}
-                  onChange={(e) => setData({ ...data, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="quiz-actions-modern">
-              <button className="quiz-button-modern secondary" onClick={prevStep}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="19" y1="12" x2="5" y2="12"/>
-                  <polyline points="12 19 5 12 12 5"/>
-                </svg>
-                Назад
-              </button>
-              <button
-                className="quiz-button-modern primary"
-                onClick={handleSubmit}
-                disabled={!canProceed()}
-              >
-                Получить расчет
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 6 && (
-          <div className="quiz-step-modern success">
-            <div className="success-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-            </div>
-            
-            <h2 className="quiz-title-modern">Спасибо за заявку!</h2>
-            
-            <p className="quiz-description-modern">
-              Мы получили ваши данные и уже подбираем оптимальные условия. Наш менеджер свяжется с вами в течение 15 минут с персональным расчетом комиссии.
-            </p>
-            
-            <div className="success-features">
-              <div className="success-feature">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Персональный расчет готовится</span>
-              </div>
-              <div className="success-feature">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Менеджер свяжется в течение 15 минут</span>
-              </div>
-              <div className="success-feature">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                <span>Подберем лучшие условия</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step <= totalSteps && step !== 1 && (
-          <div className="quiz-progress-modern">
-            <div className="progress-bar-bg">
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${((step - 1) / totalSteps) * 100}%` }}
-              />
-            </div>
-            <div className="progress-text">
-              Шаг {step - 1} из {totalSteps}
-            </div>
-          </div>
-        )}
+    <div className="quiz-card bracket-frame">
+      <div className="quiz-card-head">
+        <span className="quiz-step-counter">
+          {isResultStep ? 'РЕЗУЛЬТАТ' : `ШАГ ${String(step + 1).padStart(2, '0')} / ${String(totalSteps).padStart(2, '0')}`}
+        </span>
+        <span className="quiz-restart" onClick={restart}>Заново</span>
       </div>
+
+      <div className="quiz-progress">
+        {QUESTIONS.map((q, i) => {
+          const filled = i < step || isResultStep
+          const active = i === step && !isResultStep
+          return (
+            <div
+              key={q.key}
+              className={`quiz-progress-seg ${filled ? 'filled' : ''} ${active ? 'active' : ''}`}
+            />
+          )
+        })}
+      </div>
+
+      {currentQuestion && (
+        <div key={`q-${step}`} className={`quiz-question ${direction === 'back' ? 'anim-left' : 'anim-right'}`}>
+          <div className="quiz-eyebrow">{currentQuestion.eyebrow.toUpperCase()}</div>
+          <h3 className="quiz-question-title">{currentQuestion.title}</h3>
+          {currentQuestion.subtitle && <p className="quiz-question-subtitle">{currentQuestion.subtitle}</p>}
+
+          <div className="quiz-options">
+            {currentQuestion.options.map((opt) => {
+              const selected =
+                currentQuestion.type === 'multi'
+                  ? answers.methods.includes(opt.value)
+                  : answers[currentQuestion.key] === opt.value
+              const onActivate = () => {
+                if (currentQuestion.type === 'multi') toggleMulti(opt.value)
+                else selectSingle(currentQuestion.key, opt.value)
+              }
+              return (
+                <div
+                  key={opt.value}
+                  tabIndex={0}
+                  role="button"
+                  className={`quiz-option ${selected ? 'selected' : ''}`}
+                  onClick={onActivate}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onActivate()
+                    }
+                  }}
+                >
+                  <div>
+                    <div className="quiz-option-label">{opt.label}</div>
+                    {opt.hint && <div className="quiz-option-hint">{opt.hint}</div>}
+                  </div>
+                  <div className={`quiz-option-indicator ${currentQuestion.type === 'multi' ? 'square' : 'round'}`}>
+                    {selected && <span className="quiz-option-check">✓</span>}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {currentQuestion.type === 'single' && (
+            <div className="quiz-auto-hint">Выбор переводит к следующему шагу автоматически</div>
+          )}
+
+          <div className="quiz-nav">
+            {step > 0 && (
+              <span className="quiz-back" onClick={goBack}>← Назад</span>
+            )}
+            {currentQuestion.type === 'multi' && (
+              <button className="quiz-next-btn" onClick={goNext} disabled={!canProceedMulti}>
+                Далее →
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isResultStep && (
+        <div className="quiz-result">
+          <div className="quiz-result-label">Ваш тариф</div>
+          <div className="quiz-result-rate">
+            <span className="quiz-result-rate-value">{tariff.rate}</span>
+            <span className="quiz-result-rate-name">{tariff.name}</span>
+          </div>
+          <div className="quiz-result-range">{tariff.range}</div>
+          <div className="quiz-result-summary">{summary}</div>
+
+          {submitted ? (
+            <div className="quiz-success">
+              <div className="quiz-success-icon">✓</div>
+              <div className="quiz-success-title">Заявка отправлена</div>
+              <p className="quiz-success-text">Свяжемся в течение рабочего дня.</p>
+              <span className="quiz-restart" onClick={restart}>Пройти квиз заново</span>
+            </div>
+          ) : (
+            <form className="quiz-lead-form" onSubmit={handleSubmitLead}>
+              <div className="quiz-field">
+                <label>Имя</label>
+                <input
+                  type="text"
+                  placeholder="Как к вам обращаться"
+                  value={leadForm.name}
+                  onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                />
+              </div>
+              <div className="quiz-field">
+                <label>Telegram, email или телефон</label>
+                <input
+                  type="text"
+                  placeholder="@username или email"
+                  value={leadForm.contact}
+                  onChange={(e) => setLeadForm({ ...leadForm, contact: e.target.value })}
+                />
+              </div>
+              <div className="quiz-field">
+                <label>Компания <span className="quiz-optional">(необязательно)</span></label>
+                <input
+                  type="text"
+                  placeholder="ООО «Ромашка»"
+                  value={leadForm.company}
+                  onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
+                />
+              </div>
+
+              <label className="quiz-consent">
+                <input
+                  type="checkbox"
+                  checked={agreeToTerms}
+                  onChange={(e) => setAgreeToTerms(e.target.checked)}
+                />
+                <span>
+                  Я ознакомлен и согласен с условиями{' '}
+                  <Link to="/offer" target="_blank" rel="noopener noreferrer">Публичной оферты</Link>,{' '}
+                  <Link to="/terms" target="_blank" rel="noopener noreferrer">Пользовательского соглашения</Link>{' '}
+                  и даю согласие на обработку данных согласно{' '}
+                  <Link to="/privacy" target="_blank" rel="noopener noreferrer">Политике конфиденциальности</Link>
+                </span>
+              </label>
+
+              {submitError && <div className="quiz-error">{submitError}</div>}
+
+              <button type="submit" className="quiz-submit-btn" disabled={!canSubmitLead || submitting}>
+                {submitting ? 'Отправляем…' : 'Отправить заявку'}
+              </button>
+            </form>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -51,7 +51,7 @@ const sections: InfoPageSection[] = [
 const PricingDetailsPage: React.FC = () => (
   <InfoPageTemplate
     badge="Тарифы"
-    title="Прозрачные тарифы PaymentService"
+    title="Прозрачные тарифы KURS"
     description="Комиссия зависит только от вашего оборота и наборов сервисов. Никаких скрытых платежей."
     sections={sections}
   />

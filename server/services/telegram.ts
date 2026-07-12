@@ -10,39 +10,22 @@ if (BOT_TOKEN && CHAT_ID) {
 }
 
 interface QuizData {
-  businessType: string
-  businessTypeOther?: string
-  paymentMethods: string[]
-  turnover: string
+  role?: string
+  roleLabel?: string
+  volume?: string
+  volumeLabel?: string
+  methods?: string[]
+  methodsLabel?: string
+  payout?: string
+  payoutLabel?: string
+  urgency?: string
+  urgencyLabel?: string
+  tariffName?: string
+  tariffRate?: string
   name: string
   contact: string
-  email?: string
-}
-
-const businessTypeLabels: Record<string, string> = {
-  tourism: '🛫 Туризм (туры, билеты, экскурсии)',
-  consulting: '💡 Консультации и образование (услуги, вебинары, коучинг)',
-  ecommerce: '🛒 Интернет-магазин (товары или цифровые продукты)',
-  freelance: '👨‍💻 Фриланс / Услуги (расчеты с заказчиками)',
-  exchange: '💱 Обменник валют (офлайн или онлайн)',
-  other: '🏢 Другое',
-}
-
-const paymentMethodLabels: Record<string, string> = {
-  bank_transfer: '💳 Банковский перевод (по реквизитам)',
-  payment_systems: '🧾 Платежные системы (Юмани, Киви и т.д.)',
-  cards: '🌐 Карты (онлайн-эквайринг)',
-  sbp: '📱 СБП (Система быстрых платежей)',
-  cash: '💰 Наличные',
-  crypto: '🔄 Криптовалюты (USDT, BTC и др.)',
-  difficulties: '❌ Испытываю трудности с приемом платежей из России',
-}
-
-const turnoverLabels: Record<string, string> = {
-  '0-500k': 'До 500 тыс. рублей',
-  '500k-2m': '500 тыс. – 2 млн рублей',
-  '2m-5m': '2 – 5 млн рублей',
-  '5m+': 'Более 5 млн рублей',
+  company?: string
+  agreeToTerms?: boolean
 }
 
 export async function sendQuizNotification(data: QuizData): Promise<void> {
@@ -52,34 +35,21 @@ export async function sendQuizNotification(data: QuizData): Promise<void> {
     return
   }
 
-  const businessType =
-    data.businessType === 'other' && data.businessTypeOther
-      ? `🏢 Другое (${data.businessTypeOther})`
-      : businessTypeLabels[data.businessType] || data.businessType
-
-  const paymentMethods = data.paymentMethods
-    .map((method) => paymentMethodLabels[method] || method)
-    .join('\n')
-
-  const turnover = turnoverLabels[data.turnover] || data.turnover
-
-  const hasDifficulties = data.paymentMethods.includes('difficulties')
-
   let message = `✅ *Новая заявка из квиза!*\n\n`
   message += `---\n\n`
-  message += `📊 *Сфера:* ${businessType}\n\n`
-  message += `💳 *Принимает платежи:*\n${paymentMethods}\n\n`
-  message += `📈 *Оборот:* ${turnover}\n\n`
+  message += `👥 *Кто:* ${data.roleLabel || data.role || '—'}\n\n`
+  message += `📈 *Объём:* ${data.volumeLabel || data.volume || '—'}\n\n`
+  message += `💳 *Приём платежей:* ${data.methodsLabel || (data.methods || []).join(', ') || '—'}\n\n`
+  message += `🔁 *Вывод:* ${data.payoutLabel || data.payout || '—'}\n\n`
+  message += `⏱ *Сроки подключения:* ${data.urgencyLabel || data.urgency || '—'}\n\n`
+  message += `🏷 *Тариф:* ${data.tariffName || '—'} (${data.tariffRate || '—'})\n\n`
   message += `👤 *Контакт:* ${data.name}\n`
   message += `📞 ${data.contact}`
-  if (data.email) {
-    message += `\n📧 ${data.email}`
+  if (data.company) {
+    message += `\n🏢 ${data.company}`
   }
   message += `\n\n---\n\n`
-
-  if (hasDifficulties) {
-    message += `💡 *Запрос на решение проблемы с платежами из РФ.*`
-  }
+  message += `📄 *Согласие с офертой:* ${data.agreeToTerms ? 'да' : 'нет'}`
 
   try {
     await bot.sendMessage(CHAT_ID, message, { parse_mode: 'Markdown' })

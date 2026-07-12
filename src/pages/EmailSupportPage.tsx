@@ -5,7 +5,7 @@ const sections: InfoPageSection[] = [
   {
     title: 'Адрес для связи',
     paragraphs: [
-      'Все юридические и операционные вопросы отправляйте на support@paymentservice.com. Мы фиксируем обращения в системе и даём трекинг по номеру заявки.',
+      'Все юридические и операционные вопросы отправляйте на support@kurs.com. Мы фиксируем обращения в системе и даём трекинг по номеру заявки.',
     ],
   },
   {
@@ -31,7 +31,7 @@ const EmailSupportPage: React.FC = () => (
   <InfoPageTemplate
     badge="Поддержка"
     title="Поддержка по email"
-    description="Пишите нам на support@paymentservice.com — это официальный канал для документов и технических задач."
+    description="Пишите нам на support@kurs.com — это официальный канал для документов и технических задач."
     sections={sections}
   />
 )

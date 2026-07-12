@@ -38,4 +38,5 @@ dist/
 build/
 server/**/*.js
 server/**/*.js.map
+*.tsbuildinfo
 

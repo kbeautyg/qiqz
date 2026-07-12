@@ -22,7 +22,7 @@ const sections: InfoPageSection[] = [
   {
     title: 'Как подключиться',
     paragraphs: [
-      'Перейдите на t.me/paymentservice или добавьте нас в WhatsApp. Мы также планируем запустить канал на YouTube с разборами кейсов.',
+      'Перейдите на t.me/kurs_support или добавьте нас в WhatsApp. Мы также планируем запустить канал на YouTube с разборами кейсов.',
     ],
   },
 ]
@@ -31,7 +31,7 @@ const SocialPage: React.FC = () => (
   <InfoPageTemplate
     badge="Следите за нами"
     title="Будьте в курсе обновлений"
-    description="Присоединяйтесь к сообществу PaymentService, чтобы следить за новостями и бета-запусками."
+    description="Присоединяйтесь к сообществу KURS, чтобы следить за новостями и бета-запусками."
     sections={sections}
   />
 )

@@ -27,7 +27,7 @@ const sections: InfoPageSection[] = [
   {
     title: '03. Фиксация курса',
     paragraphs: [
-      'В конце дня или по запросу мы фиксируем курс grinex.io + комиссию PaymentService. Это защищает от волатильности и даёт прозрачную формулу расходов.',
+      'В конце дня или по запросу мы фиксируем курс grinex.io + комиссию KURS. Это защищает от волатильности и даёт прозрачную формулу расходов.',
     ],
     list: [
       'Гибкие сценарии автофиксации',
@@ -51,7 +51,7 @@ const sections: InfoPageSection[] = [
 const ProcessPage: React.FC = () => (
   <InfoPageTemplate
     badge="Процесс"
-    title="Как работает PaymentService"
+    title="Как работает KURS"
     description="Четыре простых шага от оплаты клиента до получения USDT на вашем кошельке."
     sections={sections}
   />

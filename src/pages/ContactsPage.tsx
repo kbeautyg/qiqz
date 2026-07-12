@@ -7,8 +7,8 @@ const ContactsPage: React.FC = () => {
     {
       title: 'Telegram',
       description: 'Самый быстрый способ связи',
-      action: '@paymentservice',
-      href: 'https://t.me/paymentservice',
+      action: '@kurs_support',
+      href: 'https://t.me/kurs_support',
       icon: (
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
@@ -19,8 +19,8 @@ const ContactsPage: React.FC = () => {
     {
       title: 'Email',
       description: 'Ответим в течение часа',
-      action: 'support@paymentservice.com',
-      href: 'mailto:support@paymentservice.com',
+      action: 'support@kurs.com',
+      href: 'mailto:support@kurs.com',
       icon: (
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>

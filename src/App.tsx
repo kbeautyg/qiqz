@@ -4,6 +4,7 @@ import ContactsPage from './pages/ContactsPage'
 import QuizPage from './pages/QuizPage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
+import OfferPage from './pages/OfferPage'
 import ProductPage from './pages/ProductPage'
 import CalculatePage from './pages/CalculatePage'
 import ProcessPage from './pages/ProcessPage'
@@ -37,6 +38,7 @@ function App() {
         <Route path="/social" element={<SocialPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/offer" element={<OfferPage />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>
     </Layout>

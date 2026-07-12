@@ -10,8 +10,8 @@ const sections: InfoPageSection[] = [
     ],
     list: [
       'Форма на странице контактов — идеальна для расчёта комиссии',
-      'Телеграм-чат @paymentservice для быстрых вопросов',
-      'Email support@paymentservice.com для документов и отчётов',
+      'Телеграм-чат @kurs_support для быстрых вопросов',
+      'Email support@kurs.com для документов и отчётов',
     ],
   },
   {
@@ -41,7 +41,7 @@ const sections: InfoPageSection[] = [
 const ContactSupportPage: React.FC = () => (
   <InfoPageTemplate
     badge="Связаться с нами"
-    title="Связь с командой PaymentService"
+    title="Связь с командой KURS"
     description="Выберите удобный канал — мы на связи круглосуточно."
     sections={sections}
     note={

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import './ContactForm.css'
 
@@ -16,6 +17,7 @@ const ContactForm: React.FC = () => {
     promoCode: '',
     sourcePage: window.location.pathname,
   })
+  const [agreeToTerms, setAgreeToTerms] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Partial<ContactFormData>>({})
 
@@ -74,9 +76,14 @@ const ContactForm: React.FC = () => {
       return
     }
 
+    if (!agreeToTerms) {
+      return
+    }
+
     try {
       const response = await axios.post('/api/contact', {
         ...formData,
+        agreeToTerms,
         timestamp: new Date().toISOString(),
         source: 'contact_form',
         utmParams: {
@@ -89,6 +96,7 @@ const ContactForm: React.FC = () => {
       if (response.data.success) {
         setSubmitted(true)
         setFormData({ name: '', phone: '', promoCode: '', sourcePage: window.location.pathname })
+        setAgreeToTerms(false)
       }
     } catch (error) {
       console.error('Error submitting form:', error)
@@ -99,7 +107,7 @@ const ContactForm: React.FC = () => {
   if (submitted) {
     return (
       <div className="contact-form success">
-        <h3>✅ Спасибо за заявку!</h3>
+        <h3>Спасибо за заявку!</h3>
         <p>Наш менеджер свяжется с вами в течение 15 минут.</p>
       </div>
     )
@@ -107,7 +115,7 @@ const ContactForm: React.FC = () => {
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
-      <h2 className="form-title">🚀 Получите персональное предложение</h2>
+      <h2 className="form-title">Получите персональное предложение</h2>
       <p className="form-description">
         Оставьте телефон, и наш менеджер рассчитает для вас комиссию в течение 15 минут
       </p>
@@ -152,7 +160,21 @@ const ContactForm: React.FC = () => {
         </small>
       </div>
 
-      <button type="submit" className="form-submit">
+      <label className="form-consent">
+        <input
+          type="checkbox"
+          checked={agreeToTerms}
+          onChange={(e) => setAgreeToTerms(e.target.checked)}
+        />
+        <span>
+          Я ознакомлен и согласен с условиями{' '}
+          <Link to="/offer" target="_blank" rel="noopener noreferrer">Публичной оферты</Link>{' '}
+          и даю согласие на обработку данных согласно{' '}
+          <Link to="/privacy" target="_blank" rel="noopener noreferrer">Политике конфиденциальности</Link>
+        </span>
+      </label>
+
+      <button type="submit" className="form-submit" disabled={!agreeToTerms}>
         Получить расчет комиссии
       </button>
     </form>
