@@ -5,13 +5,14 @@ import { WORD_POOL, RESERVED_SLUGS } from '../data/wordPool'
 export interface LinkRecord {
   slug: string
   createdAt: string
-  shown: boolean
-  shownAt: string | null
+  telegramUsername: string | null
+  submittedAt: string | null
 }
 
 const DATA_DIR = path.join(__dirname, '../data')
 const DATA_FILE = path.join(DATA_DIR, 'links.json')
 const SLUG_FORMAT = /^[a-z0-9]+(-[a-z0-9]+)*$/
+const USERNAME_FORMAT = /^[a-zA-Z0-9_]{5,32}$/
 
 function loadFromDisk(): LinkRecord[] {
   try {
@@ -32,6 +33,14 @@ let links: LinkRecord[] = loadFromDisk()
 
 export function isValidSlugFormat(slug: string): boolean {
   return SLUG_FORMAT.test(slug) && slug.length >= 2 && slug.length <= 40
+}
+
+export function normalizeUsername(rawUsername: string): string {
+  return rawUsername.trim().replace(/^@/, '')
+}
+
+export function isValidUsername(username: string): boolean {
+  return USERNAME_FORMAT.test(username)
 }
 
 export function listLinks(): LinkRecord[] {
@@ -64,8 +73,8 @@ export function createLink(explicitSlug?: string): LinkRecord {
   const record: LinkRecord = {
     slug,
     createdAt: new Date().toISOString(),
-    shown: false,
-    shownAt: null,
+    telegramUsername: null,
+    submittedAt: null,
   }
 
   links = [...links, record]
@@ -85,20 +94,26 @@ export function deleteLink(slug: string): boolean {
   return true
 }
 
-export function checkAndConsume(slug: string): { exists: boolean; showPopup: boolean } {
+export function getLink(slug: string): LinkRecord | undefined {
+  return links.find((l) => l.slug === slug)
+}
+
+export function submitUsername(slug: string, username: string): LinkRecord | undefined {
   const record = links.find((l) => l.slug === slug)
-  if (!record) {
-    return { exists: false, showPopup: false }
+  if (!record) return undefined
+
+  // Ссылка уже разрешена — первое поданное имя пользователя побеждает,
+  // повторная отправка не перезаписывает и не считается ошибкой.
+  if (record.telegramUsername) return record
+
+  const updated: LinkRecord = {
+    ...record,
+    telegramUsername: username,
+    submittedAt: new Date().toISOString(),
   }
 
-  if (record.shown) {
-    return { exists: true, showPopup: false }
-  }
-
-  links = links.map((l) =>
-    l.slug === slug ? { ...l, shown: true, shownAt: new Date().toISOString() } : l
-  )
+  links = links.map((l) => (l.slug === slug ? updated : l))
   persist(links)
 
-  return { exists: true, showPopup: true }
+  return updated
 }

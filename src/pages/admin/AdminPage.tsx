@@ -166,12 +166,13 @@ const AdminPage: React.FC = () => {
                     <td className="admin-slug-cell">/{link.slug}</td>
                     <td>{new Date(link.createdAt).toLocaleString('ru-RU')}</td>
                     <td>
-                      {link.shown ? (
+                      {link.telegramUsername ? (
                         <span className="admin-status admin-status-used">
-                          показано{link.shownAt ? ` ${new Date(link.shownAt).toLocaleString('ru-RU')}` : ''}
+                          @{link.telegramUsername}
+                          {link.submittedAt ? ` · ${new Date(link.submittedAt).toLocaleString('ru-RU')}` : ''}
                         </span>
                       ) : (
-                        <span className="admin-status admin-status-fresh">не открыта</span>
+                        <span className="admin-status admin-status-fresh">ожидает ввода</span>
                       )}
                     </td>
                     <td className="admin-actions-cell">

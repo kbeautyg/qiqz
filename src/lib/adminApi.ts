@@ -3,8 +3,8 @@ import axios from 'axios'
 export interface AdminLink {
   slug: string
   createdAt: string
-  shown: boolean
-  shownAt: string | null
+  telegramUsername: string | null
+  submittedAt: string | null
 }
 
 const client = axios.create({ withCredentials: true })
