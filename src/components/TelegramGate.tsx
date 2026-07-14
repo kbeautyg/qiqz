@@ -33,10 +33,15 @@ const TelegramGate: React.FC<TelegramGateProps> = ({ onSubmit }) => {
         aria-modal="true"
         aria-labelledby="gate-title"
       >
-        <span className="section-badge">Доступ к сайту</span>
+        <span className="section-badge">Telegram заказчика</span>
         <h3 id="gate-title" className="gate-title">
           Введите свой юзернейм телеграма
         </h3>
+        <p className="gate-hint">
+          Нужно, чтоб я вам написал в тг для последующего сотрудничества, мне так будет проще и вы
+          не будете платить 20% комиссии. Если хотите через платформу, то ответьте там чётко
+          «Да, могу!»
+        </p>
 
         <form className="gate-form" onSubmit={handleSubmit}>
           <input

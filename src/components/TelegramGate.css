@@ -28,7 +28,14 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  margin: 18px 0 24px;
+  margin: 18px 0 14px;
+}
+
+.gate-hint {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gray-600);
+  margin: 0 0 24px;
 }
 
 .gate-form {
