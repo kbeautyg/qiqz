@@ -1,0 +1,11 @@
+import { Request, Response, NextFunction } from 'express';
+export declare function isRateLimited(ip: string): boolean;
+export declare function recordFailedLogin(ip: string): void;
+export declare function resetLoginAttempts(ip: string): void;
+export declare function verifyPassword(password: string): boolean;
+export declare function createSession(): string;
+export declare function destroySession(token: string | undefined): void;
+export declare function getSessionToken(req: Request): string | undefined;
+export declare function setSessionCookie(res: Response, token: string): void;
+export declare function clearSessionCookie(res: Response): void;
+export declare function requireAdmin(req: Request, res: Response, next: NextFunction): void;

@@ -16,6 +16,8 @@ import TelegramSupportPage from './pages/TelegramSupportPage'
 import EmailSupportPage from './pages/EmailSupportPage'
 import SocialPage from './pages/SocialPage'
 import AboutPage from './pages/AboutPage'
+import TrackedLinkPage from './pages/TrackedLinkPage'
+import AdminPage from './pages/admin/AdminPage'
 import Layout from './components/Layout'
 import './App.css'
 
@@ -40,6 +42,8 @@ function App() {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/offer" element={<OfferPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/:slug" element={<TrackedLinkPage />} />
       </Routes>
     </Layout>
   )

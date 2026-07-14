@@ -40,3 +40,6 @@ server/**/*.js
 server/**/*.js.map
 *.tsbuildinfo
 
+# Runtime data (маркерные ссылки)
+server/data/links.json
+
